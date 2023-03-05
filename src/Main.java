@@ -3,43 +3,38 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Main {
     public static void main(String[] args) {
-        //Задание 1
-
-        List<Student> studentList = new ArrayList<>();
-        studentList.add(new Student("Рамиль", 18, 1));
-        studentList.add(new Student("Василий", 19, 2));
-        studentList.add(new Student("Марина", 20, 3));
-        studentList.add(new Student("Евгений", 21, 4));
-        studentList.add(new Student("Александр", 20, 3));
-        studentList.add(new Student("Елена", 19, 2));
-
-        findMinMax(studentList);
 
         //Задание 2
 
         List<Integer> integers = List.of(1,2,3,4,5,6,8,89, 23, 56);
         checkNumber(integers);
 
+        //Задание 1
+
+        List<Student> studentList = new ArrayList<>();
+        Stream<Integer> stream = integers.stream();
+
+        findMinMax(stream, Integer::compareTo, (x,y) -> System.out.printf(x + "" + y));
+
+
+
     }
 
-    public static void findMinMax(List<Student> studentList) {
-        String minValue = studentList.stream()
-                .min(Comparator.comparing(Student::getCourse))
-                .map(Student::getName).get();
+    public static<T> void findMinMax(Stream<? extends T> stream, Comparator<? super T> order,BiConsumer<? super T, ? super T> minMaxConsumer) {
 
-      String maxValue = studentList.stream()
-                .max(Comparator.comparing(Student::getCourse))
-                .map(Student::getName).get();
+        List<T> items = stream.sorted(order)
+                .collect(Collectors.toList());
 
-        BiConsumer<String, String> minMaxConsumer = (a, b) -> System.out.println("Самый взрослый студент " + a + ", самый взрослый студент- " + b);
+        if (!items.isEmpty()) {
+            minMaxConsumer.accept(items.get(0), items.get(items.size() - 1));
 
-        if (minMaxConsumer == null) {
-            minMaxConsumer.accept(null, null);
         } else {
-            minMaxConsumer.accept(minValue, maxValue);
+            minMaxConsumer.accept(null, null);
         }
 
 
